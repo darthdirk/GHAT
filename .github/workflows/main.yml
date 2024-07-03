@@ -1,0 +1,30 @@
+name: Build with GCC ARM and STMCubeCLI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+    build:
+      runs-on: ubuntu-latest
+
+      steps:
+      - uses: actions/checkout@v4
+        name: checkout code
+      - uses: actions/setup-node@v4
+        with:
+            node-version: 'latest'
+      - name: arm-none-eabi-gcc  # https://github.com/fiam/arm-none-eabi-gcc            
+        uses: fiam/arm-none-eabi-gcc@v1.0.4
+        with:
+          release: '10-2020-q4' # The arm-none-eabi-gcc release to use. 
+
+      - name: Build STM32CubeIde project # https://github.com/darthdirk/action-build-stm32/tree/master
+        uses: gfriedholm/action-build-stm32@v2.0
+        with:
+          project-path: STM32MCU/
+          project-target: 'STM32MCU'
+      
