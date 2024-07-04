@@ -19,11 +19,12 @@
 
 #define TS_SLAVE_ADDRESS (0x5a << 1)
 
-static float temperature;
+static float temperature_c;
+static float temperature_f;
 static uint32_t part_id;
 
 static bool readPartId(uint8_t channel, uint32_t * part_number);
-static bool readTemperature(uint8_t channel, float * degrees_C);
+static bool readTemperature(uint8_t channel, float * degrees_c, float * degrees_f);
 
 
 void temperatureInit(void) {
@@ -31,7 +32,8 @@ void temperatureInit(void) {
 }
 
 void temperatureStateMachine(void) {
-	readTemperature(TS_OBJ1_CHANNEL, &temperature);
+	readTemperature(TS_OBJ1_CHANNEL, &temperature_c, &temperature_f);
+	readPartId(TS_EE_ID1, &part_id);
 
 
 }
@@ -52,7 +54,7 @@ static bool readPartId(uint8_t channel, uint32_t * part_number){
 	return success;
 }
 
-static bool readTemperature(uint8_t channel, float * degrees_C){
+static bool readTemperature(uint8_t channel, float * degrees_c, float * degrees_f){
 	uint8_t raw_temp_buffer[2];
 
     bool success = (HAL_I2C_Mem_Read(get_i2c1_handle(), TS_SLAVE_ADDRESS, channel,
@@ -63,11 +65,14 @@ static bool readTemperature(uint8_t channel, float * degrees_C){
 
         // convert raw_temp to real temp here (page 30 of data sheet)
         if (TS_AMBIENT_CHANNEL == channel) {
-            *degrees_C = ((float)raw_temp * 0.02f - 273.15f);
+            *degrees_c = ((float)raw_temp * 0.02f - 273.15f);
+            *degrees_f = ((*degrees_c) * 1.8 + 32.0);
         } else if (TS_OBJ1_CHANNEL == channel) {
-            *degrees_C = ((float)raw_temp * 0.02f - 273.15f);
+            *degrees_c = ((float)raw_temp * 0.02f - 273.15f);
+            *degrees_f = ((*degrees_c) * 1.8 + 32.0);
         } else if (TS_OBJ2_CHANNEL == channel) {
-            *degrees_C = ((float)raw_temp * 0.02f - 273.15f);
+            *degrees_c = ((float)raw_temp * 0.02f - 273.15f);
+            *degrees_f = ((*degrees_c) * 1.8 + 32.0);
         } else {
             success = false;
         }
