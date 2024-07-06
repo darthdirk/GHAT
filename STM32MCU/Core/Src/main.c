@@ -96,7 +96,7 @@ int main(void)
   HAL_Init();
 
   /* USER CODE BEGIN Init */
-  tft_init();
+  //lcdInit(stInitCmds);
   /* USER CODE END Init */
 
   /* Configure the system clock */
@@ -118,6 +118,7 @@ int main(void)
   numTimer7InterruptsPerSec = ((HAL_RCC_GetSysClockFreq() / (TIM7->PSC + 1)) / TIM7->ARR);
   uint16_t heartbeatToggleCounter = (uint16_t)(HEARTBEAT_LED_TOGGLE_PERIOD_SEC *
 		                                       numTimer7InterruptsPerSec);
+  lcdInit(stInitCmds);
   temperatureInit();
   usbPowerDeliveryInit();
   HAL_TIM_Base_Start_IT(&htim7);
@@ -315,11 +316,11 @@ static void MX_SPI1_Init(void)
   hspi1.Instance = SPI1;
   hspi1.Init.Mode = SPI_MODE_MASTER;
   hspi1.Init.Direction = SPI_DIRECTION_2LINES;
-  hspi1.Init.DataSize = SPI_DATASIZE_4BIT;
+  hspi1.Init.DataSize = SPI_DATASIZE_8BIT;
   hspi1.Init.CLKPolarity = SPI_POLARITY_LOW;
   hspi1.Init.CLKPhase = SPI_PHASE_1EDGE;
   hspi1.Init.NSS = SPI_NSS_SOFT;
-  hspi1.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_8;
+  hspi1.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_16;
   hspi1.Init.FirstBit = SPI_FIRSTBIT_MSB;
   hspi1.Init.TIMode = SPI_TIMODE_DISABLE;
   hspi1.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
@@ -470,7 +471,10 @@ static void MX_GPIO_Init(void)
                           |LD4_Pin|GreenLed_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOA, D_C_Pin|RESET_Pin|CS_Pin|BLK_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOA, D_C_Pin|RESET_Pin|BLK_Pin, GPIO_PIN_RESET);
+
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(CS_GPIO_Port, CS_Pin, GPIO_PIN_SET);
 
   /*Configure GPIO pins : NCS_MEMS_SPI_Pin EXT_RESET_Pin LD3_Pin LD6_Pin
                            LD4_Pin GreenLed_Pin */
@@ -493,12 +497,19 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(B1_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : D_C_Pin RESET_Pin CS_Pin BLK_Pin */
-  GPIO_InitStruct.Pin = D_C_Pin|RESET_Pin|CS_Pin|BLK_Pin;
+  /*Configure GPIO pins : D_C_Pin RESET_Pin BLK_Pin */
+  GPIO_InitStruct.Pin = D_C_Pin|RESET_Pin|BLK_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : CS_Pin */
+  GPIO_InitStruct.Pin = CS_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
+  HAL_GPIO_Init(CS_GPIO_Port, &GPIO_InitStruct);
 
 /* USER CODE BEGIN MX_GPIO_Init_2 */
 /* USER CODE END MX_GPIO_Init_2 */
