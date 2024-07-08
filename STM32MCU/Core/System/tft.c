@@ -52,7 +52,7 @@ void lcdInit(const lcdInitCmdT *initCmds) {
 HAL_StatusTypeDef lcdCmd(uint8_t cmd) {
     tft_set_command_mode();
     tft_select();
-    HAL_StatusTypeDef status = HAL_SPI_Transmit((get_spi1_handle()), &cmd, sizeof(cmd), HAL_MAX_DELAY);
+    HAL_StatusTypeDef status = HAL_SPI_Transmit((get_spi1_handle()), (uint8_t *)&cmd, sizeof(cmd), HAL_MAX_DELAY);
     tft_deselect();
     if (status != HAL_OK) {
     	return HAL_ERROR;

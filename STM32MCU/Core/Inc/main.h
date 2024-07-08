@@ -90,10 +90,6 @@ uint16_t getNumTimer7InterruptsPerSec(void);
 #define LD4_GPIO_Port GPIOC
 #define GreenLed_Pin GPIO_PIN_9
 #define GreenLed_GPIO_Port GPIOC
-#define USBF4_DM_Pin GPIO_PIN_11
-#define USBF4_DM_GPIO_Port GPIOA
-#define USBF4_DP_Pin GPIO_PIN_12
-#define USBF4_DP_GPIO_Port GPIOA
 #define SWDIO_Pin GPIO_PIN_13
 #define SWDIO_GPIO_Port GPIOA
 #define SWCLK_Pin GPIO_PIN_14
